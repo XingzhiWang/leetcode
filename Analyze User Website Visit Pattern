@@ -1,0 +1,57 @@
+class Solution {
+    public List<String> mostVisitedPattern(String[] username, int[] timestamp, String[] website) {
+        // sort the index based on timestamp (the given events is not an ascending order in time)
+        Integer[] args = new Integer[username.length];
+        for (int i = 0; i < username.length; i++)
+            args[i] = i;
+        Arrays.sort(args, (o1, o2) -> timestamp[o1] - timestamp[o2]);
+        
+        // create visit sequence for each user
+        Map<String, ArrayList<String>> userVisit = new HashMap<>();
+        
+        for (int i: args) {
+            userVisit.putIfAbsent(username[i], new ArrayList<>());
+            userVisit.get(username[i]).add(website[i]);
+        }
+        
+        // create a map to count triplets
+        Map<String, Integer> triplet = new HashMap<>();
+        
+        for (String user: userVisit.keySet()) {
+            ArrayList<String> visits = userVisit.get(user);
+            if (visits.size() < 3)
+                continue;
+            Set<String> counted = new HashSet<>();
+            // Brute-force O(n^3)
+            for (int i = 0; i < visits.size() - 2; i++) {
+                for (int j = i + 1; j < visits.size() - 1; j++) {
+                    for (int k = j + 1; k < visits.size(); k++) {
+                        String curSeq = visits.get(i) + "," + visits.get(j) + "," + visits.get(k);
+                        if (!counted.contains(curSeq)) {
+                            triplet.put(curSeq, triplet.getOrDefault(curSeq, 0) + 1);
+                            counted.add(curSeq);
+                        }
+                    }
+                }
+            }
+        }
+        // find the top1 sequence: O(n)
+        int topFreq = 0;
+        String topSeq = "";
+        for (String seq: triplet.keySet()) {
+            if (triplet.get(seq) > topFreq) {
+                topFreq = triplet.get(seq);
+                topSeq = seq;
+            } else if (triplet.get(seq) == topFreq && seq.compareTo(topSeq) < 0) {
+                topSeq = seq;
+            }
+        }
+        
+        List<String> res = new LinkedList<>();
+        for (String w: topSeq.split(","))
+            res.add(w);
+        
+        return res;
+        }
+        }
+        
