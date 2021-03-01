@@ -11,6 +11,7 @@ class Solution {
         return board;
     }
     
+    
     private int crush(int[][] board){
         Set<int[]> set = new HashSet<>();
         
