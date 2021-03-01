@@ -1,0 +1,17 @@
+public int leftMostColumnWithOne(BinaryMatrix  bm) {
+        
+        int rows = bm.dimensions().get(0);
+        int cols = bm.dimensions().get(1);
+        
+        int index = cols;
+        
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (bm.get(i, j) == 1) {
+                    index = Math.min(index, j);
+                    break;
+                }
+            }
+        }
+        return index == cols ? -1 : index;
+    }
