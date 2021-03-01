@@ -6,6 +6,7 @@
         for (int[] s : slots2) {
             list.add(s);
         }
+        
         Collections.sort(list, (a, b)->(a[0] - b[0]));
         List<int[]> common = new ArrayList<>();
         int j = 0;
