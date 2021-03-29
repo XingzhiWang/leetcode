@@ -1,0 +1,84 @@
+class Solution {
+    class Visit {
+        String username;
+        int timestamp;
+        String website;
+        public Visit(String username, int timestamp, String website) {
+            this.username = username;
+            this.timestamp = timestamp;
+            this.website = website;
+        }
+        
+        public String toString() {
+            return username+" "+timestamp+" "+website;
+        }
+        
+    }
+    
+    Set<List<String>> generate3(List<String> history) {
+        Set<List<String>> output = new HashSet<>();
+        for(int i = 0; i < history.size(); i++) {
+            for(int j = i + 1; j < history.size(); j++) {
+                for(int k = j + 1; k < history.size(); k++) {
+                    List<String> l = new ArrayList<>();
+                    l.add(history.get(i));
+                    l.add(history.get(j));
+                    l.add(history.get(k));
+                    output.add(l);
+                }
+            }
+        }
+        return output;
+    }
+    
+    public List<String> mostVisitedPattern(String[] username, int[] timestamp, String[] website) {
+        Visit[] visits = new Visit[username.length];
+        for(int i = 0; i < username.length; i++) {
+            visits[i] = new Visit(username[i], timestamp[i], website[i]);
+        }
+        
+        Arrays.sort(visits, (v1, v2) -> {
+            return v1.timestamp - v2.timestamp;
+        });
+        HashMap<String, List<String>> userJourney = new HashMap<>();
+        for(Visit v : visits) {
+            userJourney.putIfAbsent(v.username, new ArrayList<>());
+            userJourney.get(v.username).add(v.website);
+        }
+        HashMap<List<String>, Integer> candidateOutput = new HashMap<>();
+        for(List<String> history : userJourney.values()) {
+            Set<List<String>> history3Comb = generate3(history); // generate all combination with respecting the time order
+            for(List<String> h : history3Comb) {
+                candidateOutput.putIfAbsent(h, 0);
+                candidateOutput.put(h, candidateOutput.get(h) + 1);
+            }
+        }
+        
+        List<List<String>> maxCandidate = new ArrayList<>();
+        int max = 0;
+        for(Map.Entry<List<String>, Integer> entry : candidateOutput.entrySet()) {
+            if(max < entry.getValue()) {
+                maxCandidate.clear();
+                max = entry.getValue();
+                maxCandidate.add(entry.getKey());
+            } else if(max == entry.getValue()) {
+                maxCandidate.add(entry.getKey());
+            }
+        }
+        System.out.println(maxCandidate);
+        List<String> output = null; 
+        String o = null;
+        
+        for(List<String> c : maxCandidate) {
+            StringBuilder sb = new StringBuilder();
+            for(String s : c) sb.append(s+" "); // the space is to make comparison on X[0]-Y[0] then X[1]-Y[1], space as a separator because of its index value
+            if(o == null || o.compareTo(sb.toString()) > 0) {
+                o = sb.toString();
+                output = c;
+            }
+        }
+        
+        return output;
+    }
+    
+}
